@@ -25,36 +25,36 @@
 export function calcTileType(index, boardSize) {
   // // TODO: ваш код будет тут
   if (index === boardSize * boardSize - boardSize) {
-    return "bottom-left";
+    return 'bottom-left';
   }
   if (index === boardSize - 1) {
-    return "top-right";
+    return 'top-right';
   }
   if (index < boardSize - 1) {
-    return index === 0 ? "top-left" : "top";
+    return index === 0 ? 'top-left' : 'top';
   }
   if (index > boardSize * boardSize - boardSize) {
-    return index === boardSize * boardSize - 1 ? "bottom-right" : "bottom";
+    return index === boardSize * boardSize - 1 ? 'bottom-right' : 'bottom';
   }
 
   if (index % boardSize === 0) {
-    return "left";
+    return 'left';
   }
   if (index % boardSize === boardSize - 1) {
-    return "right";
+    return 'right';
   }
 
-  return "center";
+  return 'center';
 }
 
 export function calcHealthLevel(health) {
   if (health < 15) {
-    return "critical";
+    return 'critical';
   }
 
   if (health < 50) {
-    return "normal";
+    return 'normal';
   }
 
-  return "high";
+  return 'high';
 }
