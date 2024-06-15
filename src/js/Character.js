@@ -21,11 +21,8 @@ export default class Character {
     this.type = type;
     // TODO: выбросите исключение, если кто-то использует "new Character()"
 
-
     if (new.target.name === 'Character') {
-      throw 'Используйте другой экземпляр класса, для создания персонажа'
+      throw 'Используйте другой экземпляр класса, для создания персонажа';
     }
-
-
   }
 }
