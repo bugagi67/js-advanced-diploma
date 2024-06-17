@@ -1,4 +1,3 @@
-import { getTypedArrayConstructor } from 'core-js/internals/array-buffer-view-core';
 import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
 import { generateTeam } from './generators';
@@ -12,6 +11,7 @@ export default class GameController {
     this.characterCount = 3;
     this.userTeam = Team.getUser();
     this.enemyTeam = Team.getEnemy();
+    this.addEventlistener();
   }
 
   init() {
@@ -19,25 +19,37 @@ export default class GameController {
     // TODO: load saved stated from stateService
     this.theme = themes.prairie;
     this.gamePlay.drawUi(this.theme);
+    this.arrayPosition = [...this.positioningUserCharacter(), ...this.positioningEnemyCharacter()];
+    console.log(this.arrayPosition);
+    this.gamePlay.redrawPositions(this.arrayPosition);
+  }
 
-    const arrayPosition = [...this.positioningUserCharacter(), ...this.positioningEnemyCharacter()];
-    console.log(arrayPosition);
-    this.gamePlay.redrawPositions(arrayPosition);
+  addEventlistener() {
+    this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
+    this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
+    this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
   }
 
   onCellClick(index) {
     // TODO: react to click
   }
 
+  // eslint-disable-next-line consistent-return
   onCellEnter(index) {
     // TODO: react to mouse enter
+    const enteredBox = this.arrayPosition.find((element) => element.position === index);
+    console.log(enteredBox);
+    if (enteredBox) {
+      return this.gamePlay.showCellTooltip(enteredBox.character.getinformation(), index);
+    }
   }
 
   onCellLeave(index) {
     // TODO: react to mouse leave
+    this.gamePlay.hideCellTooltip(index);
   }
 
-  // столбцы стартовых позиция игрока
+  // генератор столбцов стартовых позиция врага
   startEnemyPosition() {
     const position = [];
     for (let i = 0; i < this.boardSize ** 2; i += 1) {
@@ -48,7 +60,7 @@ export default class GameController {
     return position;
   }
 
-  // столбцы стартовых позиция врага
+  // генератор столбцов стартовых позиция игрока
   startUserPosition() {
     const position = [];
     for (let i = 0; i < this.boardSize ** 2; i += 1) {
@@ -59,15 +71,14 @@ export default class GameController {
     return position;
   }
 
-  // генератор позиций игрока
-  // eslint-disable-next-line class-methods-use-this
+  // генератор - рандомные позиции врага
   randomEnemyPositionGenerator() {
     const positionArray = this.startEnemyPosition();
     const randomIndex = Math.floor(Math.random() * positionArray.length);
     return positionArray[randomIndex];
   }
 
-  // генератор позиций врага
+  // генератор - рандомные позиции игрока
   randomPlayerPositionGenerator() {
     const positionArray = this.startUserPosition();
     const randomIndex = Math.floor(Math.random() * positionArray.length);

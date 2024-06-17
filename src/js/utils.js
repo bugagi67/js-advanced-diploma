@@ -36,14 +36,12 @@ export function calcTileType(index, boardSize) {
   if (index > boardSize * boardSize - boardSize) {
     return index === boardSize * boardSize - 1 ? 'bottom-right' : 'bottom';
   }
-
   if (index % boardSize === 0) {
     return 'left';
   }
   if (index % boardSize === boardSize - 1) {
     return 'right';
   }
-
   return 'center';
 }
 
@@ -51,10 +49,8 @@ export function calcHealthLevel(health) {
   if (health < 15) {
     return 'critical';
   }
-
   if (health < 50) {
     return 'normal';
   }
-
   return 'high';
 }
