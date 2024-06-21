@@ -2,13 +2,15 @@ import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
 import { generateTeam } from './generators';
 import Team from './Team';
+import GamePlay from './GamePlay';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
     this.boardSize = gamePlay.boardSize;
-    this.characterCount = 3;
+    this.stepCounter = 1;
+    this.characterCount = 2;
     this.userTeam = Team.getUser();
     this.enemyTeam = Team.getEnemy();
     this.addEventlistener();
@@ -20,7 +22,6 @@ export default class GameController {
     this.theme = themes.prairie;
     this.gamePlay.drawUi(this.theme);
     this.arrayPosition = [...this.positioningUserCharacter(), ...this.positioningEnemyCharacter()];
-    console.log(this.arrayPosition);
     this.gamePlay.redrawPositions(this.arrayPosition);
   }
 
@@ -32,13 +33,32 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
+    const enteredBox = this.arrayPosition.find((element) => element.position === index);
+    if (enteredBox) {
+      if (
+        enteredBox.character.type === 'bowman'
+        || enteredBox.character.type === 'swordsman'
+        || enteredBox.character.type === 'magician'
+      ) {
+        this.arrayPosition.forEach((element) => {
+          this.gamePlay.deselectCell(element.position);
+        });
+        this.gamePlay.selectCell(index);
+      }
+      if (
+        enteredBox.character.type === 'vampire'
+        || enteredBox.character.type === 'undead'
+        || enteredBox.character.type === 'daemon'
+      ) {
+        GamePlay.showError('Выберите своего персонажа');
+      }
+    }
   }
 
   // eslint-disable-next-line consistent-return
   onCellEnter(index) {
     // TODO: react to mouse enter
     const enteredBox = this.arrayPosition.find((element) => element.position === index);
-    console.log(enteredBox);
     if (enteredBox) {
       return this.gamePlay.showCellTooltip(enteredBox.character.getinformation(), index);
     }

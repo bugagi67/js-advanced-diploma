@@ -20,13 +20,12 @@ export default class Character {
     this.health = 50;
     this.type = type;
     // TODO: выбросите исключение, если кто-то использует "new Character()"
-
     if (new.target.name === 'Character') {
       throw 'Используйте другой экземпляр класса, для создания персонажа';
     }
   }
 
   getinformation() {
-    return `\u{1F396}${this.level} \u{2694}${this.attack} \u{1F6E1}${this.defence} \u{2764}${this.health}`
+    return `\u{1F396}${this.level} \u{2694}${this.attack} \u{1F6E1}${this.defence} \u{2764}${this.health}`;
   }
 }
