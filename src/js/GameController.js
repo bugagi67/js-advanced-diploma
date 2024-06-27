@@ -1,8 +1,9 @@
-import themes from './themes';
 import PositionedCharacter from './PositionedCharacter';
 import { generateTeam } from './generators';
 import Team from './Team';
 import GamePlay from './GamePlay';
+import GameState from './GameState';
+import { getCursors } from './cursors';
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -19,9 +20,11 @@ export default class GameController {
   init() {
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
-    this.theme = themes.prairie;
+    this.gameState = new GameState();
+    this.theme = this.gameState.themes;
     this.gamePlay.drawUi(this.theme);
     this.arrayPosition = [...this.positioningUserCharacter(), ...this.positioningEnemyCharacter()];
+    this.currentCharacter = {};
     this.gamePlay.redrawPositions(this.arrayPosition);
   }
 
@@ -33,6 +36,8 @@ export default class GameController {
 
   onCellClick(index) {
     // TODO: react to click
+    const cell = this.gamePlay.cells[index];
+    console.log(this.currentCharacter, index);
     const enteredBox = this.arrayPosition.find((element) => element.position === index);
     if (enteredBox) {
       if (
@@ -44,6 +49,7 @@ export default class GameController {
           this.gamePlay.deselectCell(element.position);
         });
         this.gamePlay.selectCell(index);
+        this.currentCharacter = enteredBox;
       }
       if (
         enteredBox.character.type === 'vampire'
@@ -53,6 +59,11 @@ export default class GameController {
         GamePlay.showError('Выберите своего персонажа');
       }
     }
+  //&& cell.classList.contains('selected-green'
+    // Тут нужно дописать
+    if (!enteredBox) {
+      this.movementPlayerCharacter(index);
+    }
   }
 
   // eslint-disable-next-line consistent-return
@@ -60,12 +71,14 @@ export default class GameController {
     // TODO: react to mouse enter
     const enteredBox = this.arrayPosition.find((element) => element.position === index);
     if (enteredBox) {
+      this.gamePlay.setCursor(getCursors(enteredBox));
       return this.gamePlay.showCellTooltip(enteredBox.character.getinformation(), index);
     }
   }
 
   onCellLeave(index) {
     // TODO: react to mouse leave
+    this.gamePlay.setCursor('auto');
     this.gamePlay.hideCellTooltip(index);
   }
 
@@ -135,5 +148,18 @@ export default class GameController {
       positionedEnemyTeam.push(new PositionedCharacter(character, position));
     });
     return positionedEnemyTeam;
+  }
+
+  // перемещение персонажа
+  movementPlayerCharacter(index) {
+    const characterPreviousPosition = this.currentCharacter.position;
+    console.log(this.currentCharacter.position);
+    this.currentCharacter.position = index;
+    this.gamePlay.redrawPositions(this.arrayPosition);
+    this.gamePlay.deselectCell(characterPreviousPosition);
+    this.gamePlay.deselectCell(index);
+    // this.gamePlay.setCursor(getCursors());
+    this.currentCharacter = {};
+    this.stepCounter += 1;
   }
 }
